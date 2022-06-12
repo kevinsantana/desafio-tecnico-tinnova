@@ -1,0 +1,58 @@
+version: "3.7"
+
+services:
+  cadastro_veiculos:
+    container_name: cadastro_veiculos
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cadastro_veiculos:1.0.0
+    volumes:
+      - .:/deploy
+    working_dir: /deploy
+    command: >
+        bash -cx "cd docs; make clean; make html; cd .. &&
+        cd cadastro_veiculos &&
+        gunicorn --workers=3 --worker-class=uvicorn.workers.UvicornWorker --timeout=174000 --bind=0.0.0.0:7000 'app:start_application()'"
+    ports:
+      - 7000:7000
+    networks:
+      - cadastro-veiculos-network
+    depends_on:
+      - db_cadastro_veiculos
+  
+  db_cadastro_veiculos:
+    container_name: db_cadastro_veiculos
+    image: postgres:12
+    restart: always
+    environment:
+      - POSTGRES_DB=cadastro_veiculos
+      - POSTGRES_PASSWORD=cadastro_veiculos
+      - POSTGRES_USER=cadastro_veiculos
+    ports:
+      - 15432:5432
+    volumes:
+      - vdb_cadastro_veiculos:/var/lib/postgresql/data/
+    networks:
+      - cadastro-veiculos-network
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=cadastro_veiculos@email.com
+      - PGADMIN_DEFAULT_PASSWORD=cadastro_veiculos
+    ports:
+      - 8032:80
+    depends_on:
+      - db_cadastro_veiculos
+    networks:
+      - cadastro-veiculos-network
+
+networks:
+  cadastro-veiculos-network:
+    name: cadastro-veiculos-network
+    driver: bridge
+
+volumes:
+    vdb_cadastro_veiculos:
