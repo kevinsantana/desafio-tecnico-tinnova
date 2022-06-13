@@ -6,7 +6,7 @@ from cadastro_veiculos.database import DataBase, campos_obrigatorios
 
 @dataclass
 class Veiculos(DataBase):
-    id: int = None
+    id_veiculos: int = None
     veiculo: str = None
     marca: str = None
     ano: int = None
@@ -14,6 +14,10 @@ class Veiculos(DataBase):
     vendido: bool = False
     created: datetime = None
     updated: datetime = None
+
+    @property
+    def id_veiculos(self):
+        return self.__id_veiculos
 
     @property
     def veiculo(self):
@@ -67,12 +71,12 @@ class Veiculos(DataBase):
         values (%(veiculo)s, %(marca)s, %(ano)s, %(descricao)s, %(vendido)s, current_timestamp)"""
         return self.insert()
 
-    @campos_obrigatorios(["id"])
+    @campos_obrigatorios(["id_veiculos"])
     def atualizar(self):
         """
         Atualiza um veículo.
 
-        :param int id: Id do veículo.
+        :param int id_veiculos: Id do veículo.
         :return: True se a operação for exeutada com sucesso, False caso contrário.
         :rtype: bool
         """
@@ -80,22 +84,22 @@ class Veiculos(DataBase):
         UPDATE VEICULOS SET VEICULO=%(veiculo)s, MARCA=%(marca)s, ANO=%(ano)s, DESCRICAO=%(descricao)s,
         VENDIDO=%(vendido)s, UPDATED=current_timestamp
         """
-        self.query_string += " WHERE VEICULOS.ID = %(id)s"
+        self.query_string += " WHERE VEICULOS.ID_VEICULOS = %(id)s"
         return True if self.insert() else False
 
-    @campos_obrigatorios(["id"])
+    @campos_obrigatorios(["id_veiculos"])
     def existe(self):
         """
         Verifica se um veículo existe no banco de dados.
 
-        :param int id: Id do veículo.
+        :param int id_veiculos: Id do veículo.
         :return: True se a operação for exeutada com sucesso, False caso contrário.
         :rtype: bool
         """
-        self.query_string = "SELECT COUNT(*) FROM VEICULOS WHERE VEICULOS.ID = %(id)s"
+        self.query_string = "SELECT COUNT(*) FROM VEICULOS WHERE VEICULOS.ID_VEICULOS = %(id)s"
         return True if self.find_one()[0] else False
 
-    @campos_obrigatorios(["id"])
+    @campos_obrigatorios(["id_veiculos"])
     def deletar(self):
         """
         Deleta um veículo do banco de dados.
@@ -104,7 +108,7 @@ class Veiculos(DataBase):
         :return: True se a operação for exeutada com sucesso, False caso contrário.
         :rtype: bool
         """
-        self.query_string = "DELETE FROM VEICULOS WHERE VEICULOS.ID = %(id)s"
+        self.query_string = "DELETE FROM VEICULOS WHERE VEICULOS.ID_VEICULOS = %(id)s"
         return True if self.insert() else False
 
     def buscar(self):
@@ -120,7 +124,7 @@ class Veiculos(DataBase):
         """
         self.query_string = """
         SELECT * FROM VEICULOS
-        WHERE VEICULOS.MARCA = %()s, VEICULOS.ANO = %()s, VEICULOS.VENDIDO = %()s
+        WHERE VEICULOS.MARCA = %(marca)s, VEICULOS.ANO = %(ano)s, VEICULOS.VENDIDO = %(vendido)s
         """
         veiculos, total = self.find_all(total=True)
         return total, [Veiculos(**dict(veiculo)) for veiculo in veiculos]
