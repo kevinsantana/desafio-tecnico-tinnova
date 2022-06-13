@@ -3,7 +3,7 @@
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS public.VEICULOS CASCADE;
 -- -----------------------------------------------------
--- Table public.REVENDEDOR
+-- Table public.VEICULOS
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.VEICULOS (
   ID_VEICULOS SERIAL PRIMARY KEY,

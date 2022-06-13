@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/veiculos",
+    "/",
     status_code=201,
     summary="Cadastrar um veículo",
     response_model=CriarVeiculoResponse,

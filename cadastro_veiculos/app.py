@@ -1,3 +1,4 @@
+import sys
 import time
 import json
 import urllib3
@@ -27,8 +28,7 @@ from docs import (
 
 urllib3.disable_warnings()
 
-logger.remove()
-logger.add("cadastro_veiculos.log", rotation="500 MB", serialize=True)
+logger.add(sys.stdout, colorize=True)
 logger.level("REQUEST RECEBIDA", no=38, color="<yellow>")
 logger.level("REQUEST FINALIZADA", no=39, color="<yellow>")
 logger.level("EXCEPTION", no=38, color="<red>")

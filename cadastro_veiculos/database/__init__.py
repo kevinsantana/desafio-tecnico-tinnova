@@ -81,7 +81,7 @@ class DataBase:
         self.__cursor.close()
         self.__connection.close()
 
-    def insert(self):
+    def insert(self, return_id=False):
         """
         Insere um dado no banco de dados. As classes que herdam de DataBase devem
         ser instanciadas com o método query_string que é a operação que será
@@ -106,7 +106,10 @@ class DataBase:
         self.__connect()
         self.__cursor.execute(self.query_string, self.dict())
         self.__connection.commit()
-        result = self.__cursor.fetchone()[0]
+        if return_id:
+            result = self.__cursor.fetchone()["id_veiculos"]
+        else:
+            result = self.__cursor.rowcount
         self.__disconect()
         return result
 

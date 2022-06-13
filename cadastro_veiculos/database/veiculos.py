@@ -1,19 +1,28 @@
 from datetime import datetime
-from dataclasses import dataclass
 
 from cadastro_veiculos.database import DataBase, campos_obrigatorios
 
 
-@dataclass
 class Veiculos(DataBase):
-    id_veiculos: int = None
-    veiculo: str = None
-    marca: str = None
-    ano: int = None
-    descricao: str = None
-    vendido: bool = False
-    created: datetime = None
-    updated: datetime = None
+    def __init__(
+        self,
+        id_veiculos: int = None,
+        veiculo: str = None,
+        marca: str = None,
+        ano: int = None,
+        descricao: str = None,
+        vendido: bool = False,
+        created: datetime = None,
+        updated: datetime = None,
+    ):
+        self.__id_veiculos = id_veiculos
+        self.__veiculo = veiculo
+        self.__marca = marca
+        self.__ano = ano
+        self.__descricao = descricao
+        self.__vendido = vendido
+        self.__created = created
+        self.__updated = updated
 
     @property
     def id_veiculos(self):
@@ -49,9 +58,9 @@ class Veiculos(DataBase):
 
     def dict(self):
         return {
-            key.replace("_Veiculo__", ""): value
+            key.replace("_Veiculos__", ""): value
             for key, value in self.__dict__.items()
-            if value
+            if value is not None
         }
 
     @campos_obrigatorios(["veiculo", "marca", "ano", "descricao", "vendido"])
@@ -68,8 +77,10 @@ class Veiculos(DataBase):
         :rtype: int
         """
         self.query_string = """INSERT INTO VEICULOS (VEICULO, MARCA, ANO, DESCRICAO, VENDIDO, CREATED)
-        values (%(veiculo)s, %(marca)s, %(ano)s, %(descricao)s, %(vendido)s, current_timestamp)"""
-        return self.insert()
+        values (%(veiculo)s, %(marca)s, %(ano)s, %(descricao)s, %(vendido)s, current_timestamp)
+        RETURNING id_veiculos;
+        """
+        return self.insert(return_id=True)
 
     @campos_obrigatorios(["id_veiculos"])
     def atualizar(self):
@@ -96,7 +107,9 @@ class Veiculos(DataBase):
         :return: True se a operação for exeutada com sucesso, False caso contrário.
         :rtype: bool
         """
-        self.query_string = "SELECT COUNT(*) FROM VEICULOS WHERE VEICULOS.ID_VEICULOS = %(id)s"
+        self.query_string = (
+            "SELECT COUNT(*) FROM VEICULOS WHERE VEICULOS.ID_VEICULOS = %(id)s"
+        )
         return True if self.find_one()[0] else False
 
     @campos_obrigatorios(["id_veiculos"])
