@@ -1,7 +1,7 @@
 SHELL=/bin/bash
 BASE_DIR:=.
 PROJECT_BASE_DIR:=$(BASE_DIR)/cadastro_veiculos/
-PROJECT_NAME:=cashback-api
+PROJECT_NAME:=cadastro-veiculos
 
 BASE_DOCKER_COMPOSE_FILE:=$(BASE_DIR)/docker-compose.yml
 DOCKER_COMPOSE:=docker-compose -f $(BASE_DOCKER_COMPOSE_FILE)

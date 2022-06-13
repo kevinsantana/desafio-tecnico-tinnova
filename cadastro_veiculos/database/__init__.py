@@ -106,7 +106,7 @@ class DataBase:
         self.__connect()
         self.__cursor.execute(self.query_string, self.dict())
         self.__connection.commit()
-        result = self.__cursor.rowcount
+        result = self.__cursor.fetchone()[0]
         self.__disconect()
         return result
 
