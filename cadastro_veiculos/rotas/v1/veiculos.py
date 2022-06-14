@@ -7,6 +7,10 @@ from cadastro_veiculos.models.veiculos import (
     AtualizarVeiculoRequest,
     AtualizarVeiculoResponse,
     CRIAR_VEICULO_DEFAULT_RESPONSES,
+    BUSCAR_VEICULO_DEFAULT_RESPONSES,
+    BUSCAR_UM_VEICULO_DEFAULT_RESPONSES,
+    ATUALIZAR_VEICULO_DEFAULT_RESPONSES,
+    DELETAR_VEICULO_DEFAULT_RESPONSES,
 )
 
 router = APIRouter()
@@ -47,6 +51,7 @@ def list_all():
     "",
     status_code=200,
     summary="Buscar veículos.",
+    responses=BUSCAR_VEICULO_DEFAULT_RESPONSES,
 )
 def buscar(
     marca: str = Query("Honda", description="Marca do(s) veículo(s) buscado(s)"),
@@ -64,6 +69,7 @@ def buscar(
     "/{id_veiculos}",
     status_code=200,
     summary="Buscar um veículo.",
+    responses=BUSCAR_UM_VEICULO_DEFAULT_RESPONSES,
 )
 def buscar_um(
     id_veiculos: int = Path(1, description="Id do veículo buscado"),
@@ -78,7 +84,8 @@ def buscar_um(
     "/{id_veiculos}",
     status_code=200,
     summary="Atualizar um veículo",
-    response_model=AtualizarVeiculoResponse
+    response_model=AtualizarVeiculoResponse,
+    responses=ATUALIZAR_VEICULO_DEFAULT_RESPONSES,
 )
 def atualizar(
     id_veiculos: str = Path(..., description="Id do veículo"),
@@ -91,11 +98,13 @@ def atualizar(
     """
     return {"resultado": vcl.atualizar(id_veiculos, dados_atualizacao)}
 
+
 @router.patch(
     "/{id_veiculos}",
     status_code=200,
     summary="Atualizar um campo do veículo",
-    response_model=AtualizarVeiculoResponse
+    response_model=AtualizarVeiculoResponse,
+    responses=ATUALIZAR_VEICULO_DEFAULT_RESPONSES,
 )
 def atualizar_campo(
     id_veiculos: str = Path(..., description="Id do veículo"),
@@ -113,6 +122,7 @@ def atualizar_campo(
     "/{id_veiculos}",
     status_code=200,
     summary="Deleta um veículo",
+    responses=DELETAR_VEICULO_DEFAULT_RESPONSES
 )
 def deletar(
     id_veiculos: int = Path(1, description="Id do veículo"),

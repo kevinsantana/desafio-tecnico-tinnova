@@ -4,7 +4,12 @@ from cadastro_veiculos.config import envs
 from cadastro_veiculos.database.veiculos import Veiculos
 
 from cadastro_veiculos.excecoes import ErrorDetails
-from cadastro_veiculos.excecoes.veiculos import MarcaNaoExisteException
+from cadastro_veiculos.excecoes.veiculos import (
+    MarcaNaoExisteException,
+    FiltroInvalidoException,
+    VeiculoNaoEncontradoException,
+    AtualizacaoInvalidaException,
+)
 
 
 def validar_marca(marca: str) -> bool:
@@ -57,32 +62,124 @@ def inserir(*, veiculo: str, marca: str, ano: int, descricao: str, vendido: bool
 
 
 def listar():
+    """
+    Lista todos os veículos da base.
+
+    :return: Lista de veículos.
+    :rtype: list
+    """
     total, veiculos = Veiculos().listar_todos()
     return total, veiculos
 
 
 def buscar(marca: str = None, ano: int = None, vendido: bool = None):
+    """
+    Busca veículo(s) a partir do(s) filtro(s) informado(s).
+
+    :param marca: Marca dos veículos buscados.
+    :type marca: str, optional
+    :param ano: Ano dos veículos buscados.
+    :type ano: int, optional
+    :vendido: Filtrar entre veículos vendidos ou não.
+    :type vendido: bool, optional
+    :return: Veiculos da base.
+    :rtype: list
+    :raises FiltroInvalidoException: Caso nenhum filtro seja informado.
+    """
     if not all([marca, ano, vendido]):
-        pass
+        raise FiltroInvalidoException(
+            status=400,
+            error="Bad Request",
+            message="Filtro inválido",
+            error_details=[
+                ErrorDetails(message="É preciso informar ao menos um filtro.").to_dict()
+            ],
+        )
     total, veiculos = Veiculos(marca=marca, ano=ano, vendido=vendido).buscar()
     return total, veiculos
 
 
 def buscar_um(id_veiculos: int):
+    """
+    Busca um veículo a partir do id informado.
+
+    :param int id_veiculos: Id do veículo buscado.
+    :return: Veículo buscado.
+    :rtype: dict
+    :raises VeiculoNaoEncontradoException: Não foi encontrado um registro a partir do id informado.
+    """
     if not Veiculos(id_veiculos=id_veiculos).existe():
-        pass
+        raise VeiculoNaoEncontradoException(
+            status=404,
+            error="Not Found",
+            message="Registro não encontrado",
+            error_details=[
+                ErrorDetails(
+                    message=f"Não foi encontrado um registro a partir do id informado {id_veiculos}."
+                ).to_dict()
+            ],
+        )
     return Veiculos(id_veiculos=id_veiculos).listar_um().dict()
 
 
 def atualizar(id_veiculos: int, dados_atualizacao: dict, parcial=False):
+    """
+    Atualiza um registro ou parte dele.
+
+    :param int id_veiculos: Id do veículo que será atualizado.
+    :param dict dados_atualizados: Dados a serem atualizados.
+    :param parcial: Caso a atualização seja parcial.
+    :type parcial: bool, optional
+    :return: Indicação se o registro foi ou não atualizado com sucesso.
+    :rtype: bool
+    :raises VeiculoNaoEncontradoException: Não foram encontrado registros.
+    :raises AtualizacaoInvalidaException: Não foram informados campos para a atualização.
+    """
     if not Veiculos(id_veiculos=id_veiculos).existe():
-        pass
+        raise VeiculoNaoEncontradoException(
+            status=404,
+            error="Not Found",
+            message="Registro não encontrado",
+            error_details=[
+                ErrorDetails(
+                    message=f"Não foi encontrado um registro a partir do id informado {id_veiculos}."
+                ).to_dict()
+            ],
+        )
     if not dados_atualizacao:
-        pass
-    return Veiculos(id_veiculos=id_veiculos, **dados_atualizacao.dict()).atualizar(parcial=parcial)
+        raise AtualizacaoInvalidaException(
+            status=400,
+            error="Bad request",
+            message="Atualização inválida",
+            error_details=[
+                ErrorDetails(
+                    message="Não foram informados campos para a atualização do registro."
+                ).to_dict()
+            ],
+        )
+    return Veiculos(id_veiculos=id_veiculos, **dados_atualizacao.dict()).atualizar(
+        parcial=parcial
+    )
 
 
 def deletar(id_veiculos: int):
+    """
+    Deleta um registro da base.
+
+    :param int id_veiculos: Id do veículo que será atualizado.
+    :return: Indicação se o registro foi ou não atualizado com sucesso.
+    :rtype: bool
+    :raises VeiculoNaoEncontradoException: Não foi encontrado um registro a partir do id informado.
+    """
     if not Veiculos(id_veiculos=id_veiculos).existe():
-        pass
+        raise VeiculoNaoEncontradoException(
+            status=404,
+            error="Not Found",
+            message="Registro não encontrado",
+            error_details=[
+                ErrorDetails(
+                    message=f"Não foi encontrado um registro a partir do id informado {id_veiculos}."
+                ).to_dict()
+            ],
+        )
     return Veiculos(id_veiculos=id_veiculos).deletar()
