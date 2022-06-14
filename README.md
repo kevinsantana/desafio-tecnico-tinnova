@@ -71,7 +71,7 @@ Com a aplicação em execução, é necessário executar o _script_ de criação
 Após executar a aplicação e o script do banco de dados, com os _containers_ em execução, execute o seguinte comando:
 
 ```bash
-docker container exec -it cadastro_veiculos pytest -v
+docker container exec -it --env-file=.env cadastro_veiculos pytest -v
 ```
 
 ### Autoformatter
