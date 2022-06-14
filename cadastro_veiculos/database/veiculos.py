@@ -83,7 +83,7 @@ class Veiculos(DataBase):
         return self.insert(return_id=True)
 
     @campos_obrigatorios(["id_veiculos"])
-    def atualizar(self):
+    def atualizar(self, parcial=False):
         """
         Atualiza um veículo.
 
@@ -91,11 +91,27 @@ class Veiculos(DataBase):
         :return: True se a operação for exeutada com sucesso, False caso contrário.
         :rtype: bool
         """
-        self.query_string = """
-        UPDATE VEICULOS SET VEICULO=%(veiculo)s, MARCA=%(marca)s, ANO=%(ano)s, DESCRICAO=%(descricao)s,
-        VENDIDO=%(vendido)s, UPDATED=current_timestamp
-        """
-        self.query_string += " WHERE VEICULOS.ID_VEICULOS = %(id)s"
+        self.query_string = ""
+        if parcial:
+            self.query_string = """
+            UPDATE VEICULOS SET
+            """
+            if self.__veiculo:
+                self.query_string += " VEICULO=%(veiculo)s"
+            if self.__marca:
+                self.query_string += ", MARCA=%(marca)s"
+            if self.__ano:
+                self.query_string += ", ANO=%(ano)s"
+            if self.__descricao:
+                self.query_string += ", DESCRICAO=%(descricao)s"
+            if self.__vendido:
+                self.query_string += ", VENDIDO=%(vendido)s"
+        else:
+            self.query_string = """
+            UPDATE VEICULOS SET VEICULO=%(veiculo)s, MARCA=%(marca)s, ANO=%(ano)s, DESCRICAO=%(descricao)s,
+            VENDIDO=%(vendido)s
+            """
+        self.query_string += ", UPDATED=current_timestamp WHERE VEICULOS.ID_VEICULOS = %(id_veiculos)s"
         return True if self.insert() else False
 
     @campos_obrigatorios(["id_veiculos"])

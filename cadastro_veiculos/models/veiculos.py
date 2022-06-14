@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, Field
 
 from cadastro_veiculos.excecoes import ErrorDetails
@@ -16,6 +17,18 @@ class CriarVeiculoRequest(BaseModel):
 
 class CriarVeiculoResponse(BaseModel):
     id: int
+
+
+class AtualizarVeiculoRequest(BaseModel):
+    veiculo: Optional[str] = Field(None, description="Nome do veículo")
+    marca: Optional[str] = Field(None, description="Marca do veículo")
+    ano: Optional[int] = Field(None, description="Ano do veículo")
+    descricao: Optional[str] = Field(None, description="Uma descrição sobre o veículo")
+    vendido: Optional[bool] = Field(None, description="Indicar se o veículo foi ou não vendido")
+
+
+class AtualizarVeiculoResponse(BaseModel):
+    resultado: bool
 
 
 CRIAR_VEICULO_DEFAULT_RESPONSES = parse_openapi(

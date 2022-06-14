@@ -74,6 +74,14 @@ def buscar_um(id_veiculos: int):
     return Veiculos(id_veiculos=id_veiculos).listar_um().dict()
 
 
+def atualizar(id_veiculos: int, dados_atualizacao: dict, parcial=False):
+    if not Veiculos(id_veiculos=id_veiculos).existe():
+        pass
+    if not dados_atualizacao:
+        pass
+    return Veiculos(id_veiculos=id_veiculos, **dados_atualizacao.dict()).atualizar(parcial=parcial)
+
+
 def deletar(id_veiculos: int):
     if not Veiculos(id_veiculos=id_veiculos).existe():
         pass

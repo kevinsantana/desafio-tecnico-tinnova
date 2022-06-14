@@ -4,6 +4,8 @@ from cadastro_veiculos.modulos import veiculos as vcl
 from cadastro_veiculos.models.veiculos import (
     CriarVeiculoRequest,
     CriarVeiculoResponse,
+    AtualizarVeiculoRequest,
+    AtualizarVeiculoResponse,
     CRIAR_VEICULO_DEFAULT_RESPONSES,
 )
 
@@ -70,6 +72,41 @@ def buscar_um(
     Enpoint para buscar um veículo.
     """
     return {"veiculos": vcl.buscar_um(id_veiculos)}
+
+
+@router.put(
+    "/{id_veiculos}",
+    status_code=200,
+    summary="Atualizar um veículo",
+    response_model=AtualizarVeiculoResponse
+)
+def atualizar(
+    id_veiculos: str = Path(..., description="Id do veículo"),
+    dados_atualizacao: AtualizarVeiculoRequest = Body(
+        ..., description="Dados relativos a atualização"
+    ),
+):
+    """
+    Atualiza um veículo.
+    """
+    return {"resultado": vcl.atualizar(id_veiculos, dados_atualizacao)}
+
+@router.patch(
+    "/{id_veiculos}",
+    status_code=200,
+    summary="Atualizar um campo do veículo",
+    response_model=AtualizarVeiculoResponse
+)
+def atualizar_campo(
+    id_veiculos: str = Path(..., description="Id do veículo"),
+    dados_atualizacao: AtualizarVeiculoRequest = Body(
+        ..., description="Dados relativos a atualização"
+    ),
+):
+    """
+    Atualiza um ou mais campos de um veículo.
+    """
+    return {"resultado": vcl.atualizar(id_veiculos, dados_atualizacao, parcial=True)}
 
 
 @router.delete(
