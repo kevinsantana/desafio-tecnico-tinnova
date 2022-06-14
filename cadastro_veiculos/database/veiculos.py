@@ -108,7 +108,7 @@ class Veiculos(DataBase):
         :rtype: bool
         """
         self.query_string = (
-            "SELECT COUNT(*) FROM VEICULOS WHERE VEICULOS.ID_VEICULOS = %(id)s"
+            "SELECT COUNT(*) FROM VEICULOS WHERE VEICULOS.ID_VEICULOS = %(id_veiculos)s"
         )
         return True if self.find_one()[0] else False
 
@@ -121,7 +121,7 @@ class Veiculos(DataBase):
         :return: True se a operação for exeutada com sucesso, False caso contrário.
         :rtype: bool
         """
-        self.query_string = "DELETE FROM VEICULOS WHERE VEICULOS.ID_VEICULOS = %(id)s"
+        self.query_string = "DELETE FROM VEICULOS WHERE VEICULOS.ID_VEICULOS = %(id_veiculos)s"
         return True if self.insert() else False
 
     def buscar(self):
@@ -134,10 +134,40 @@ class Veiculos(DataBase):
         :type ano: int, optional
         :vendido: Filtrar entre veículos vendidos ou não.
         :type vendido: bool, optional
+        :return: Veiculos da base.
+        :rtype: list
         """
         self.query_string = """
         SELECT * FROM VEICULOS
-        WHERE VEICULOS.MARCA = %(marca)s, VEICULOS.ANO = %(ano)s, VEICULOS.VENDIDO = %(vendido)s
+        WHERE VEICULOS.MARCA = %(marca)s AND VEICULOS.ANO = %(ano)s AND VEICULOS.VENDIDO = %(vendido)s
         """
         veiculos, total = self.find_all(total=True)
-        return total, [Veiculos(**dict(veiculo)) for veiculo in veiculos]
+        return total, [Veiculos(**dict(veiculo)).dict() for veiculo in veiculos]
+
+    def listar_todos(self):
+        """
+        Retorna todos os veículos.
+
+        :return: Todos os veiculos da base.
+        :rtype: list
+        """
+        self.query_string = """
+        SELECT * FROM VEICULOS
+        """
+        veiculos, total = self.find_all(total=True)
+        return total, [Veiculos(**dict(veiculo)).dict() for veiculo in veiculos]
+
+    @campos_obrigatorios(["id_veiculos"])
+    def listar_um(self):
+        """
+        Lista um veículo a partir do seu id.
+
+        :param int id_veiculos: Id do veículo buscado.
+        :return: Veiculos
+        :rtype: :class:`database.veiculos.Veiculos` ou None
+        """
+        self.query_string = """
+        SELECT * FROM VEICULOS WHERE VEICULOS.ID_VEICULOS = %(id_veiculos)s
+        """
+        veiculo = self.find_one()
+        return Veiculos(**dict(veiculo)) if veiculo else None

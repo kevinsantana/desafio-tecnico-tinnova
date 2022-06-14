@@ -33,7 +33,7 @@ class DatabaseModel(BaseModel):
 class Envs(BaseSettings):
     ENVIRONMENT: Optional[Enum] = EnvironmentEnum.PROD
     DB_URI: str = DatabaseModel().DATABASE_URL
-    SECRET_KEY: str = os.environ.get("SECRET_KEY", None)
+    MARCAS: str = os.environ.get("MARCAS", None)
 
     class Config:
         case_sensitive = True

@@ -5,10 +5,7 @@ from cadastro_veiculos.models import parse_openapi, Message
 
 
 class CriarVeiculoRequest(BaseModel):
-    veiculo: str = Field(
-        "Civic",
-        description="Nome do veículo",
-    )
+    veiculo: str = Field("Civic", description="Nome do veículo")
     marca: str = Field("Honda", description="Marca do veículo")
     ano: int = Field(2022, description="Ano do veículo")
     descricao: str = Field(
